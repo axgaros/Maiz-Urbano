@@ -222,3 +222,21 @@ Este README conserva las decisiones vigentes. **Ya existe la primera implementac
 - [SQLite en Python: módulo sqlite3](https://docs.python.org/3/library/sqlite3.html)
 - [PyInstaller: modos de empaquetado](https://pyinstaller.org/en/stable/operating-mode.html)
 - [SQLite: documentación técnica](https://www.sqlite.org/docs.html)
+
+
+## Ubicaciones correctas y compilación automática
+
+En modo desarrollo, HTML/CSS/JS se encuentran en `frontend/` y SQLite en `data/`. Al empaquetar con PyInstaller `--onedir`, la interfaz reside en `_internal/frontend/` y los datos permanecen en `data/maiz_urbano.db`, al lado de `MaizUrbano.exe`. No copies solo el ejecutable: conserva toda la carpeta.
+
+Para comprobar rutas y almacenamiento sin iniciar la interfaz:
+
+```powershell
+py main.py --self-check
+py -m unittest discover -s tests -v
+```
+
+Para construir la distribución en Windows, ejecuta `powershell -ExecutionPolicy Bypass -File .\build_windows.ps1` en la raíz del proyecto. El script descarga dependencias de desarrollo inicialmente; la app empaquetada no requiere internet.
+
+En GitHub se añadió **Actions → Windows - Compilacion y pruebas**. Cuando se ejecute correctamente podrás descargar el artefacto **MaizUrbano-Windows-portable** y descomprimirlo antes de abrir el `.exe`.
+
+**Estado de validación:** las pruebas de rutas y SQLite se realizaron fuera de Windows. Hasta comprobar una ejecución exitosa en GitHub Actions y abrir la ventana con WebView2, no se considera verificada la aplicación nativa.
