@@ -1,0 +1,2 @@
+# Instalar en Windows para ejecutar la ventana de escritorio.
+pywebview>=5,<7
