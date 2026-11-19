@@ -1,6 +1,7 @@
 """Maíz Urbano: aplicación local de escritorio (Python + pywebview + SQLite)."""
 from __future__ import annotations
 import json
+from contextlib import contextmanager
 import tempfile
 import sqlite3
 import sys
@@ -101,11 +102,17 @@ class Store:
                 ('Tostitos','bolsas','Empaquetado'),('Maruchan','pzas','Empaquetado'),
                 ('Vasos','pzas','Desechable'),('Cucharas','pzas','Desechable')])
 
+    @contextmanager
     def connect(self):
+        """Commit or roll back transactions and always close the SQLite handle."""
         db = sqlite3.connect(self.path, timeout=10)
-        db.row_factory = sqlite3.Row
-        db.execute('PRAGMA foreign_keys=ON')
-        return db
+        try:
+            db.row_factory = sqlite3.Row
+            db.execute('PRAGMA foreign_keys=ON')
+            with db:
+                yield db
+        finally:
+            db.close()
 
     def rows(self, query, params=()):
         with self.connect() as db:
