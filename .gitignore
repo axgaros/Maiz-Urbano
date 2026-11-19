@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+data/
+backups/
+dist/
+build/
+*.spec
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+screenshot-*.png
+.pytest_cache/
