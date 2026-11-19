@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101010">
+  <title>Maíz Urbano — Gestión local</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Ir al contenido</a>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <div class="brand"><span>MAÍZ</span><span>URBANO<span class="brand-mark">✳</span></span><small>GESTIÓN LOCAL</small></div>
+      <nav id="navigation" class="nav" aria-label="Apartados">
+        <button class="nav-item selected" type="button" data-page="inicio"><span class="nav-symbol" aria-hidden="true">⌂</span> Inicio</button>
+        <button class="nav-item" type="button" data-page="ventas"><span class="nav-symbol" aria-hidden="true">▤</span> Ventas</button>
+        <button class="nav-item" type="button" data-page="inventario"><span class="nav-symbol" aria-hidden="true">▧</span> Inventario</button>
+        <button class="nav-item" type="button" data-page="compras"><span class="nav-symbol" aria-hidden="true">▣</span> Compras y gastos</button>
+        <button class="nav-item" type="button" data-page="caja"><span class="nav-symbol" aria-hidden="true">▥</span> Caja</button>
+        <button class="nav-item" type="button" data-page="reportes"><span class="nav-symbol" aria-hidden="true">▥</span> Reportes</button>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot"></span><span id="connection">Conectando con SQLite…</span><small>Una computadora · Sin internet</small></div>
+    </aside>
+    <div class="workspace"><header class="topbar"><div class="topbar-label">Maíz Urbano <span class="sep">/</span> <span id="breadcrumb">Inicio</span></div><div class="topbar-right"><span class="desktop-only">Demostración académica</span><span id="today"></span></div></header><main id="main" tabindex="-1"><div class="loading">Preparando interfaz…</div></main></div>
+  </div>
+  <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+</body>
+</html>
