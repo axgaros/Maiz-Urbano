@@ -1,9 +1,19 @@
 # Maíz Urbano — Sistema local de gestión
 
-> **Estado:** arquitectura y alcance acordados; implementación pendiente.  
+> **Estado:** primera versión de código publicada; integración pywebview y empaquetado `.exe` pendientes de validar en Windows.  
 > **Tipo:** proyecto académico para una clase de economía, con prototipo funcional de escritorio.  
 > **Fecha de definición:** 19 de noviembre de 2026.  
 > **Entorno de demostración:** una sola computadora Windows, sin internet ni hosting.
+
+## 0. Primera implementación disponible
+
+**19 de noviembre de 2026:** se publicó código para seis apartados (Inicio, Ventas, Inventario, Compras y gastos, Caja y Reportes), una base SQLite local y pruebas de Python. Se verificaron seis pruebas automatizadas y las pantallas en Chromium. Todavía no se ha probado la ventana pywebview ni el `.exe` en Windows.
+
+**Abrir en Windows:** instalar Python, ejecutar `py -m pip install -r requirements.txt` y después `py main.py` dentro de la carpeta del proyecto. La instalación de dependencias puede requerir internet inicialmente; el uso posterior se diseñó offline.
+
+**Construir ejecutable portable:** ejecutar `powershell -ExecutionPolicy Bypass -File .\build_windows.ps1` en Windows. Mantener la carpeta de salida completa; validar WebView2 y la compilación antes de una exposición.
+
+**Guías obligatorias de interfaz:** [DESIGN.md](DESIGN.md), [UX-FLOWS.md](UX-FLOWS.md), [AGENTS.md](AGENTS.md), [QA-UI.md](QA-UI.md). Las cinco skills de referencia están enlazadas, pero no se instalaron automáticamente.
 
 ## 1. Contexto del negocio
 
@@ -204,7 +214,7 @@ Los datos reales de ventas, costos de compra y consumos no se conocen. Si se nec
 
 ## 10. Estado del repositorio
 
-Este `README.md` documenta las decisiones vigentes. **Todavía no se ha implementado ni probado la aplicación**; los nombres de archivos y la estructura son propuestas de arquitectura, no evidencia de funcionalidades terminadas.
+Este README conserva las decisiones vigentes. **Ya existe la primera implementación de código** en `main.py`, `frontend/`, `tests/` y los archivos de instalación. El árbol de la sección 4 es conceptual y no coincide exactamente con esta primera versión, que centraliza el backend en `main.py`. Se validaron seis pruebas Python/SQLite y la visualización en Chromium; falta la verificación nativa de Windows.
 
 ## 11. Referencias técnicas
 
