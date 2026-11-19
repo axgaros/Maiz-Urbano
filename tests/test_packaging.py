@@ -14,8 +14,11 @@ class PackagingPathTests(unittest.TestCase):
     def test_source_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             data, resources = main.resolve_paths(frozen=False, source_file=str(Path(tmp) / 'main.py'))
-            self.assertEqual(data, Path(tmp))
-            self.assertEqual(resources, Path(tmp))
+            # Windows temp directories can be written using a DOS 8.3 alias
+            # (e.g. RUNNER~1). resolve_paths canonicalizes those aliases.
+            expected = Path(tmp).resolve()
+            self.assertEqual(data, expected)
+            self.assertEqual(resources, expected)
 
     def test_windows_onedir_resource_and_db_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -24,8 +27,9 @@ class PackagingPathTests(unittest.TestCase):
                 frozen=True, executable=exe_dir / 'MaizUrbano.exe',
                 bundle_dir=exe_dir / '_internal',
             )
-            self.assertEqual(data / 'data' / 'maiz_urbano.db', exe_dir / 'data' / 'maiz_urbano.db')
-            self.assertEqual(resources / 'frontend' / 'index.html', exe_dir / '_internal' / 'frontend' / 'index.html')
+            expected_dir = exe_dir.resolve()
+            self.assertEqual(data / 'data' / 'maiz_urbano.db', expected_dir / 'data' / 'maiz_urbano.db')
+            self.assertEqual(resources / 'frontend' / 'index.html', expected_dir / '_internal' / 'frontend' / 'index.html')
             self.assertNotIn('_internal', str(data))
 
     def test_portable_data_survives_reopen(self):
