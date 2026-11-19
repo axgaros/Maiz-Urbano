@@ -1,13 +1,31 @@
 """Maíz Urbano: aplicación local de escritorio (Python + pywebview + SQLite)."""
 from __future__ import annotations
 import json
+import tempfile
 import sqlite3
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-ROOT = Path(sys.executable).resolve().parent if getattr(sys, 'frozen', False) else Path(__file__).resolve().parent
-DB_PATH = ROOT / 'data' / 'maiz_urbano.db'
+def resolve_paths(*, frozen=None, executable=None, bundle_dir=None, source_file=None):
+    """Separate writable portable data from bundled, read-only UI resources.
+
+    PyInstaller --onedir places --add-data contents under sys._MEIPASS
+    (normally dist/MaizUrbano/_internal), NOT next to the .exe.
+    """
+    if frozen is None:
+        frozen = bool(getattr(sys, 'frozen', False))
+    if frozen:
+        executable_dir = Path(executable or sys.executable).resolve().parent
+        resources_dir = Path(bundle_dir or getattr(sys, '_MEIPASS', executable_dir / '_internal')).resolve()
+        return executable_dir, resources_dir
+    project_dir = Path(source_file or __file__).resolve().parent
+    return project_dir, project_dir
+
+
+DATA_ROOT, RESOURCE_ROOT = resolve_paths()
+DB_PATH = DATA_ROOT / 'data' / 'maiz_urbano.db'
+FRONTEND_PATH = RESOURCE_ROOT / 'frontend' / 'index.html' 
 
 MENU = [
  ('des-cre-g', 'Desgranado grande', 'Desgranados', 55, 'Crema, mayonesa y queso', 'cup'),
@@ -258,10 +276,37 @@ class Api:
 
 
 def run():
+    if not FRONTEND_PATH.is_file():
+        raise FileNotFoundError(f'No se encontró la interfaz: {FRONTEND_PATH}. Verifica que la carpeta _internal/frontend se haya incluido en el paquete.')
     import webview  # Solo se requiere al abrir la aplicación de escritorio.
-    Store()
-    webview.create_window('Maíz Urbano — Gestión local',str(ROOT/'frontend'/'index.html'),js_api=Api(),width=1360,height=850,min_size=(1024,640),background_color='#FFF9EF')
+    api = Api()  # Crea la base de datos en DATA_ROOT/data cuando todavía no existe.
+    webview.create_window('Maíz Urbano — Gestión local', str(FRONTEND_PATH), js_api=api,
+                          width=1360, height=850, min_size=(1024, 640), background_color='#FFF9EF')
     webview.start(debug=False)
 
 
-if __name__=='__main__':run()
+def self_check():
+    """Smoke test for packaged Windows binary without opening a GUI.
+
+    Confirms bundled UI assets and writable SQLite next to the executable.
+    Temporary test records are deleted after the check.
+    """
+    for relative in ('index.html', 'styles.css', 'app.js'):
+        asset = RESOURCE_ROOT / 'frontend' / relative
+        if not asset.is_file():
+            raise FileNotFoundError(f'Recurso no incluido en el ejecutable: {asset}')
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='maiz-smoke-', dir=DB_PATH.parent) as temp:
+        db = Path(temp) / 'probe.db'
+        store = Store(db)
+        store.sale([{'id': 'tostielote', 'quantity': 1}])
+        if Store(db).sales()[0]['total_cents'] != 7000:
+            raise RuntimeError('Error de persistencia SQLite en la distribución.')
+    return True
+
+
+if __name__ == '__main__':
+    if len(sys.argv) == 2 and sys.argv[1] == '--self-check':
+        self_check()
+    else:
+        run()
